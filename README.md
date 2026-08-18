@@ -60,7 +60,7 @@
 ### 方式一：通过 GitHub Release 安装（推荐）
 
 ```bash
-dsh plugin --profile <name> add https://github.com/cfy209/dsh-chat-tools/releases/download/v0.1.0/dsh-external-dsh-chat-tools-0.1.0.tgz
+dsh plugin --profile <name> add https://github.com/cfy209/dsh-chat-tools/releases/download/v0.2.0/dsh-external-dsh-chat-tools-0.2.0.tgz
 ```
 
 也可以到 [Releases 页面](https://github.com/cfy209/dsh-chat-tools/releases) 下载 `dsh-external-dsh-chat-tools-0.1.0.tgz` 后本地安装。

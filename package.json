@@ -1,13 +1,13 @@
 {
   "name": "@dsh-external/dsh-chat-tools",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Collapsible conversation turns with multi-select/select-all and Markdown/TXT export for DeepSeek Harness.",
   "type": "module",
   "main": "./lib/index.js",
   "types": "./lib/types/index.d.ts",
   "repository": {
     "type": "git",
-    "url": "https://github.com/your-name/dsh-chat-tools"
+    "url": "https://github.com/cfy209/dsh-chat-tools"
   },
   "publishConfig": {
     "access": "public"
