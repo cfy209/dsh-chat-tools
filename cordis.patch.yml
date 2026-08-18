@@ -1,0 +1,8 @@
+# dsh-chat-tools bundle patch.
+#
+# Installed through the official CLI or bundle channel:
+#   dsh plugin --profile <name> add @dsh-external/dsh-chat-tools
+# This insert mounts the plugin row into the profile's cordis stack.
+- insert:
+    - id: dsh-chat-tools
+      name: '@dsh-external/dsh-chat-tools'
