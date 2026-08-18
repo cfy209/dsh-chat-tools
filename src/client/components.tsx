@@ -118,14 +118,17 @@ export const AssistantActionToolbar = memo(function AssistantActionToolbar(props
     const root = rootRef.current
     if (!root) return
     // The slot renders inside the turn-tail container; the rows we need to
-    // collapse are siblings of that container in the chat list.
-    const turnTailEl = root.closest<HTMLElement>('[data-turn-tail]')
-    if (!turnTailEl) return
-    const list = turnTailEl.parentElement
+    // collapse are siblings of the turn-tail FLOW ROW in the chat list.
+    // The flow row is the wrapper carrying `data-chat-flow-kind="turn-tail"`;
+    // `[data-turn-tail]` alone is nested one level deeper and has no siblings.
+    const turnTailRow = root.closest<HTMLElement>('[data-chat-flow-kind="turn-tail"]')
+      ?? root.closest<HTMLElement>('[data-turn-tail]')
+    if (!turnTailRow) return
+    const list = turnTailRow.parentElement
     if (!list) return
 
     const apply = () => {
-      let current: Element | null = turnTailEl.previousElementSibling
+      let current: Element | null = turnTailRow.previousElementSibling
       const rows: HTMLElement[] = []
       while (current && current instanceof HTMLElement) {
         const kind = current.getAttribute('data-chat-flow-kind')
