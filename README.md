@@ -15,6 +15,20 @@
 
 ---
 
+## 为什么做这个插件
+
+用 DeepSeek Harness 久了之后，我发现一个很真实的痛点：
+
+> 我明明只问了一句话，AI 却可能回我很长一大段，甚至中间还夹着工具调用、命令输出、多步推理。等我想往上翻找“我上一句到底问了什么”的时候，整个页面已经变得非常长，滚动起来很累。
+
+知乎的“收起回答”给了我灵感：如果每一轮 AI 回复也能折叠成一行，我就能像翻目录一样快速定位到想看的对话。
+
+后来又发现，很多时候我想把某几轮有价值的对话保存下来，但手动复制又容易漏、格式也乱。于是我把“多选 + 导出 Markdown/TXT”也一起做进了这个插件。
+
+这就是 **dsh-chat-tools** 的由来：让 DSH 的长对话更清爽、更可保存。
+
+---
+
 ## 截图预览
 
 > 下面是占位图。如果你有真实截图，请放到 `docs/` 并替换下面的图片链接（推荐 `screenshot-collapse.png` / `screenshot-export.png`）。
@@ -25,7 +39,7 @@
 
 在线交互演示（纯前端模拟）：
 
-👉 **[打开 dsh-chat-tools 演示页](https://htmlpreview.github.io/?https://github.com/cfy209/dsh-chat-tools/blob/main/demo/index.html)**
+👉 **[打开 dsh-chat-tools 在线演示](https://cfy209.github.io/dsh-chat-tools/)**
 
 ---
 
@@ -104,9 +118,8 @@ dsh-chat-tools/
 │       ├── store.ts          # 选择/折叠状态
 │       ├── export.ts         # Markdown/TXT 导出逻辑
 │       └── components.tsx    # 头部工具栏 + 每轮折叠/复选框
-├── demo/
-│   └── index.html            # 纯前端交互演示（折叠 + 多选 + 导出）
 ├── docs/
+│   ├── index.html            # GitHub Pages 在线演示（折叠 + 多选 + 导出）
 │   ├── screenshot-collapse.svg
 │   └── screenshot-export.svg
 ├── cordis.patch.yml          # bundle 挂载补丁
