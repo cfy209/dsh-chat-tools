@@ -124,6 +124,8 @@
   <p class="subtitle">模拟 DeepSeek Harness 中的“折叠回复 + 多选/全选 + 导出 Markdown/TXT”效果</p>
 
   <div class="toolbar">
+    <button id="collapseAllBtn" type="button">折叠全部</button>
+    <button id="expandAllBtn" type="button">展开全部</button>
     <button id="selectBtn" type="button">选择</button>
     <span id="selectAllWrap" style="display:none">
       <button id="selectAllBtn" type="button">全选</button>
@@ -171,6 +173,8 @@ const TURNS = [
 ];
 
 const chat = document.getElementById('chat');
+const collapseAllBtn = document.getElementById('collapseAllBtn');
+const expandAllBtn = document.getElementById('expandAllBtn');
 const selectBtn = document.getElementById('selectBtn');
 const selectAllWrap = document.getElementById('selectAllWrap');
 const selectAllBtn = document.getElementById('selectAllBtn');
@@ -242,6 +246,8 @@ function updateToolbar() {
   exportTxtBtn.disabled = count === 0;
   selectAllWrap.style.display = selectMode ? 'inline' : 'none';
   selectBtn.style.display = selectMode ? 'none' : 'inline-block';
+  collapseAllBtn.style.display = selectMode ? 'none' : 'inline-block';
+  expandAllBtn.style.display = selectMode ? 'none' : 'inline-block';
   document.querySelectorAll('.turn-checkbox').forEach(cb => {
     cb.style.display = selectMode ? 'inline-block' : 'none';
   });
@@ -286,6 +292,12 @@ function exportAs(format) {
   }
 }
 
+collapseAllBtn.addEventListener('click', () => {
+  document.querySelectorAll('.turn').forEach(el => el.classList.add('collapsed'));
+});
+expandAllBtn.addEventListener('click', () => {
+  document.querySelectorAll('.turn').forEach(el => el.classList.remove('collapsed'));
+});
 selectBtn.addEventListener('click', () => {
   selectMode = true;
   selected.clear();

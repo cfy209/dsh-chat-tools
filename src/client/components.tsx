@@ -59,9 +59,17 @@ export const HeaderToolbar = memo(function HeaderToolbar(props: HeaderToolbarPro
   return (
     <div className={HEADER_CLASS}>
       {!mode ? (
-        <button type="button" className={BTN_CLASS} onClick={() => chatTools.toggleMode()}>
-          {t('select')}
-        </button>
+        <Fragment>
+          <button type="button" className={BTN_CLASS} onClick={() => chatTools.collapseAll(closedTurns)}>
+            {t('collapseAll')}
+          </button>
+          <button type="button" className={BTN_CLASS} onClick={() => chatTools.expandAll()}>
+            {t('expandAll')}
+          </button>
+          <button type="button" className={BTN_CLASS} onClick={() => chatTools.toggleMode()}>
+            {t('select')}
+          </button>
+        </Fragment>
       ) : (
         <Fragment>
           <span className={SUMMARY_CLASS}>{t('selected', { count: selectedCount })}</span>

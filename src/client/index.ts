@@ -27,6 +27,8 @@ const zh = {
   selected: '已选 {count} 组',
   collapse: '折叠回复',
   expand: '展开回复',
+  collapseAll: '折叠全部',
+  expandAll: '展开全部',
   collapsedHint: 'AI 回复已折叠',
   selectTurn: '选择第 {turn} 轮对话',
 }
@@ -41,6 +43,8 @@ const en = {
   selected: '{count} selected',
   collapse: 'Collapse',
   expand: 'Expand',
+  collapseAll: 'Collapse all',
+  expandAll: 'Expand all',
   collapsedHint: 'AI reply collapsed',
   selectTurn: 'Select turn {turn}',
 }
