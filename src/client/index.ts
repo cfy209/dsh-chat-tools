@@ -98,6 +98,13 @@ const STYLE_CSS = `
   accent-color: var(--dsw-alias-state-business-primary, #4f8cff);
   cursor: pointer;
 }
+/* When the right sidebar is open, keep the chat scrollbar clear of the
+   sidebar resize handle by reserving a transparent right border. The handle
+   itself is left untouched, so the scrollbar stays on the left side of the
+   border and remains draggable. */
+body:not([data-dsh-sidebar-collapsed]) [data-conversation-scroll] {
+  border-right: var(--dsh-scrollbar-width, 8px) solid transparent !important;
+}
 `
 
 function injectStyles(): void {
