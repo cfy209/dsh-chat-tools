@@ -98,15 +98,25 @@ const STYLE_CSS = `
   accent-color: var(--dsw-alias-state-business-primary, #4f8cff);
   cursor: pointer;
 }
+/* Fix: dsh-better-sidebar's right-panel resize handle straddles the border
+   (left: -4px) and overlaps the chat scrollbar, so dragging the scrollbar
+   hits the resize handle instead. Keep the handle entirely inside the panel. */
+[class*="_panelResize"] {
+  left: 0 !important;
+  width: 6px !important;
+}
 `
 
 function injectStyles(): void {
   if (typeof document === 'undefined') return
-  if (document.querySelector(`style[data-plugin-css="${STYLE_ID}"]`)) return
-  const style = document.createElement('style')
-  style.dataset.pluginCss = STYLE_ID
+  let style = document.querySelector<HTMLStyleElement>(`style[data-plugin-css="${STYLE_ID}"]`)
+  if (!style) {
+    style = document.createElement('style')
+    style.dataset.pluginCss = STYLE_ID
+    document.head.appendChild(style)
+  }
+  // Always refresh the content so hot reloads pick up CSS changes.
   style.textContent = STYLE_CSS
-  document.head.appendChild(style)
 }
 
 export function apply(ctx: any): void {
