@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>dsh-chat-tools 交互演示</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --panel: #171a21;
+    --panel-2: #1e222b;
+    --border: #2a2f3a;
+    --text: #e6e8eb;
+    --muted: #9aa3af;
+    --accent: #4f8cff;
+    --user-bubble: #2b3a55;
+    --ai-bubble: #22262f;
+    --success: #3fb950;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  }
+  .app {
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 24px 16px 64px;
+  }
+  h1 { font-size: 20px; font-weight: 600; }
+  .subtitle { color: var(--muted); font-size: 13px; margin-top: -6px; }
+  .toolbar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 20px 0 16px;
+    padding: 10px 12px;
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+  }
+  button {
+    font: inherit;
+    color: var(--text);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  button:hover:not(:disabled) { background: rgba(255,255,255,.06); }
+  button.primary { border-color: var(--accent); color: var(--accent); }
+  button:disabled { opacity: .45; cursor: not-allowed; }
+  .selected-count { color: var(--muted); font-size: 13px; }
+  .chat { display: flex; flex-direction: column; gap: 18px; }
+  .turn {
+    background: var(--panel);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+    position: relative;
+  }
+  .user-msg, .ai-msg {
+    border-radius: 12px;
+    padding: 10px 14px;
+    line-height: 1.65;
+    font-size: 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .user-msg {
+    background: var(--user-bubble);
+    margin-bottom: 10px;
+  }
+  .user-msg::before { content: "你"; display: block; font-size: 12px; opacity: .75; margin-bottom: 4px; }
+  .ai-msgs { display: flex; flex-direction: column; gap: 8px; }
+  .ai-msg { background: var(--ai-bubble); border: 1px solid var(--border); }
+  .ai-msg::before { content: "AI"; display: block; font-size: 12px; opacity: .75; margin-bottom: 4px; }
+  .turn-tail {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px dashed var(--border);
+  }
+  .turn-tail input[type="checkbox"] {
+    width: 15px;
+    height: 15px;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .collapsed-hint { color: var(--muted); font-size: 13px; }
+  .turn.collapsed .ai-msgs { display: none; }
+  .turn.collapsed .collapse-label-expand { display: inline; }
+  .turn.collapsed .collapse-label-collapse { display: none; }
+  .collapse-label-expand { display: none; }
+  .note {
+    margin-top: 32px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    background: rgba(79,140,255,.08);
+    border: 1px solid rgba(79,140,255,.25);
+    color: var(--muted);
+    font-size: 13px;
+    line-height: 1.6;
+  }
+  code {
+    background: rgba(255,255,255,.08);
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>dsh-chat-tools 交互演示</h1>
+  <p class="subtitle">模拟 DeepSeek Harness 中的“折叠回复 + 多选/全选 + 导出 Markdown/TXT”效果</p>
+
+  <div class="toolbar">
+    <button id="selectBtn" type="button">选择</button>
+    <span id="selectAllWrap" style="display:none">
+      <button id="selectAllBtn" type="button">全选</button>
+      <button id="clearBtn" type="button">清空</button>
+      <button id="exportMdBtn" class="primary" type="button" disabled>导出 Markdown</button>
+      <button id="exportTxtBtn" class="primary" type="button" disabled>导出 TXT</button>
+      <button id="cancelBtn" type="button">取消</button>
+    </span>
+    <span id="selectedCount" class="selected-count"></span>
+  </div>
+
+  <div class="chat" id="chat">
+    <!-- turns injected by JS -->
+  </div>
+
+  <div class="note">
+    这是纯前端演示，不连接任何后端。折叠/选择/导出逻辑与 DSH 插件一致。
+    实际插件在 DeepSeek Harness 中通过
+    <code>conversation.session.header.utilities</code> 和
+    <code>conversation.chat.assistant-actions</code> 两个槽位挂载。
+  </div>
+</div>
+
+<script>
+const TURNS = [
+  {
+    user: "帮我分析一下这段代码有什么问题：\nfunction calc(a, b) { return a + b }",
+    ai: [
+      "这段代码主要有一个问题：\n\n1. 没有类型校验，传入字符串时会变成字符串拼接；\n2. 缺少边界处理，例如 NaN 或 Infinity；\n3. 命名不够清晰。",
+      "建议改为：\n```js\nfunction add(a, b) {\n  if (typeof a !== 'number' || typeof b !== 'number') throw new TypeError('expected number')\n  return a + b\n}\n```"
+    ]
+  },
+  {
+    user: "那如果我要支持多个数字相加呢？",
+    ai: [
+      "可以改用 rest 参数：\n\n```js\nfunction sum(...nums) {\n  return nums.reduce((acc, n) => acc + n, 0)\n}\n```\n\n这样调用 `sum(1,2,3)` 就能得到 6。"
+    ]
+  },
+  {
+    user: "好的，谢谢！",
+    ai: [
+      "不客气～如果之后有需要，也可以把这段对话导出成 Markdown 或 TXT 保存下来。"
+    ]
+  }
+];
+
+const chat = document.getElementById('chat');
+const selectBtn = document.getElementById('selectBtn');
+const selectAllWrap = document.getElementById('selectAllWrap');
+const selectAllBtn = document.getElementById('selectAllBtn');
+const clearBtn = document.getElementById('clearBtn');
+const exportMdBtn = document.getElementById('exportMdBtn');
+const exportTxtBtn = document.getElementById('exportTxtBtn');
+const cancelBtn = document.getElementById('cancelBtn');
+const selectedCount = document.getElementById('selectedCount');
+
+let selectMode = false;
+const selected = new Set();
+
+function renderTurns() {
+  chat.innerHTML = '';
+  TURNS.forEach((turn, index) => {
+    const turnEl = document.createElement('div');
+    turnEl.className = 'turn';
+    turnEl.dataset.turn = index;
+
+    const userEl = document.createElement('div');
+    userEl.className = 'user-msg';
+    userEl.textContent = turn.user;
+
+    const aiMsgs = document.createElement('div');
+    aiMsgs.className = 'ai-msgs';
+    turn.ai.forEach(text => {
+      const aiEl = document.createElement('div');
+      aiEl.className = 'ai-msg';
+      aiEl.textContent = text;
+      aiMsgs.appendChild(aiEl);
+    });
+
+    const tail = document.createElement('div');
+    tail.className = 'turn-tail';
+
+    const checkbox = document.createElement('input');
+    checkbox.type = 'checkbox';
+    checkbox.className = 'turn-checkbox';
+    checkbox.style.display = selectMode ? 'inline-block' : 'none';
+    checkbox.checked = selected.has(index);
+    checkbox.addEventListener('change', () => {
+      if (checkbox.checked) selected.add(index);
+      else selected.delete(index);
+      updateToolbar();
+    });
+
+    const collapseBtn = document.createElement('button');
+    collapseBtn.type = 'button';
+    collapseBtn.innerHTML = '<span class="collapse-label-collapse">折叠回复</span><span class="collapse-label-expand">展开回复</span>';
+    collapseBtn.addEventListener('click', () => {
+      turnEl.classList.toggle('collapsed');
+    });
+
+    const hint = document.createElement('span');
+    hint.className = 'collapsed-hint';
+    hint.style.display = 'none';
+    hint.textContent = 'AI 回复已折叠';
+
+    tail.append(checkbox, collapseBtn, hint);
+    turnEl.append(userEl, aiMsgs, tail);
+    chat.appendChild(turnEl);
+  });
+}
+
+function updateToolbar() {
+  const count = selected.size;
+  selectedCount.textContent = selectMode ? `已选 ${count} 组` : '';
+  exportMdBtn.disabled = count === 0;
+  exportTxtBtn.disabled = count === 0;
+  selectAllWrap.style.display = selectMode ? 'inline' : 'none';
+  selectBtn.style.display = selectMode ? 'none' : 'inline-block';
+  document.querySelectorAll('.turn-checkbox').forEach(cb => {
+    cb.style.display = selectMode ? 'inline-block' : 'none';
+  });
+}
+
+function collectSelected() {
+  const entries = [];
+  TURNS.forEach((turn, index) => {
+    if (!selected.has(index)) return;
+    entries.push({ role: '用户', text: turn.user });
+    turn.ai.forEach(text => entries.push({ role: 'AI', text }));
+  });
+  return entries;
+}
+
+function download(filename, text, mime) {
+  const blob = new Blob([text], { type: mime });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function exportAs(format) {
+  const entries = collectSelected();
+  if (entries.length === 0) return;
+  const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
+  if (format === 'md') {
+    const lines = ['# DSH 对话导出', ''];
+    for (const e of entries) {
+      lines.push(`## ${e.role}`, '', e.text, '', '---', '');
+    }
+    download(`dsh-chat-${stamp}.md`, lines.join('\n').trim() + '\n', 'text/markdown;charset=utf-8');
+  } else {
+    const lines = [];
+    for (const e of entries) {
+      lines.push('====================', e.role, '====================', '', e.text, '');
+    }
+    download(`dsh-chat-${stamp}.txt`, lines.join('\n').trim() + '\n', 'text/plain;charset=utf-8');
+  }
+}
+
+selectBtn.addEventListener('click', () => {
+  selectMode = true;
+  selected.clear();
+  updateToolbar();
+});
+cancelBtn.addEventListener('click', () => {
+  selectMode = false;
+  selected.clear();
+  updateToolbar();
+});
+selectAllBtn.addEventListener('click', () => {
+  TURNS.forEach((_, i) => selected.add(i));
+  document.querySelectorAll('.turn-checkbox').forEach((cb, i) => { cb.checked = true; });
+  updateToolbar();
+});
+clearBtn.addEventListener('click', () => {
+  selected.clear();
+  document.querySelectorAll('.turn-checkbox').forEach(cb => { cb.checked = false; });
+  updateToolbar();
+});
+exportMdBtn.addEventListener('click', () => exportAs('md'));
+exportTxtBtn.addEventListener('click', () => exportAs('txt'));
+
+renderTurns();
+updateToolbar();
+</script>
+</body>
+</html>

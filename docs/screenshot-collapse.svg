@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="400" viewBox="0 0 800 400">
+  <rect width="800" height="400" fill="#0f1117"/>
+  <rect x="40" y="40" width="720" height="320" rx="14" fill="#171a21" stroke="#2a2f3a" stroke-width="2"/>
+  <text x="80" y="90" fill="#e6e8eb" font-family="sans-serif" font-size="22" font-weight="600">折叠回复效果（截图占位）</text>
+  <text x="80" y="130" fill="#9aa3af" font-family="sans-serif" font-size="14">把你的真实截图放到 docs/screenshot-collapse.png 后替换此图</text>
+  <rect x="80" y="160" width="260" height="70" rx="10" fill="#2b3a55"/>
+  <text x="100" y="190" fill="#e6e8eb" font-family="sans-serif" font-size="13">你：帮我分析这段代码</text>
+  <rect x="80" y="250" width="320" height="70" rx="10" fill="#22262f" stroke="#2a2f3a"/>
+  <text x="100" y="280" fill="#9aa3af" font-family="sans-serif" font-size="12">AI 回复已折叠 · 点击展开</text>
+</svg>

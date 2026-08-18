@@ -1,12 +1,31 @@
 # dsh-chat-tools
 
-A pluggable client plugin for **DeepSeek Harness** that makes long conversations easier to navigate and save:
+[![GitHub stars](https://img.shields.io/github/stars/cfy209/dsh-chat-tools?style=social)](https://github.com/cfy209/dsh-chat-tools/stargazers)
+[![GitHub release](https://img.shields.io/github/v/release/cfy209/dsh-chat-tools)](https://github.com/cfy209/dsh-chat-tools/releases)
+[![License](https://img.shields.io/github/license/cfy209/dsh-chat-tools)](LICENSE)
+[![DSH Plugin](https://img.shields.io/badge/DSH-Plugin-4f8cff)](https://github.com/cfy209/dsh-chat-tools)
+
+一个面向 **DeepSeek Harness** 的可插拔客户端插件，让长对话更易浏览、更易保存：
 
 - **折叠回复（Zhihu 风格）**：每一轮 AI 回复完成后，可以折叠成一行，快速往上翻找之前的对话。
 - **多选 / 全选**：进入选择模式后，按“轮”勾选对话；支持一键全选当前可见的已完成轮次。
 - **导出 Markdown / TXT**：把选中的对话批量保存为本地 `.md` 或 `.txt` 文件。
 
 所有功能都运行在 Harness 的 Web UI 客户端，不需要改后端，也不需要改 Harness 本体。
+
+---
+
+## 截图预览
+
+> 下面是占位图。如果你有真实截图，请放到 `docs/` 并替换下面的图片链接（推荐 `screenshot-collapse.png` / `screenshot-export.png`）。
+
+| 折叠回复 | 多选与导出 |
+|---|---|
+| ![折叠回复](docs/screenshot-collapse.svg) | ![多选与导出](docs/screenshot-export.svg) |
+
+在线交互演示（纯前端模拟）：
+
+👉 **[打开 dsh-chat-tools 演示页](https://htmlpreview.github.io/?https://github.com/cfy209/dsh-chat-tools/blob/main/demo/index.html)**
 
 ---
 
@@ -23,7 +42,15 @@ A pluggable client plugin for **DeepSeek Harness** that makes long conversations
 
 ## 安装
 
-### 方式一：作为本地插件注入（开发/试用）
+### 方式一：通过 GitHub Release 安装（推荐）
+
+```bash
+dsh plugin --profile <name> add https://github.com/cfy209/dsh-chat-tools/releases/download/v0.1.0/dsh-external-dsh-chat-tools-0.1.0.tgz
+```
+
+也可以到 [Releases 页面](https://github.com/cfy209/dsh-chat-tools/releases) 下载 `dsh-external-dsh-chat-tools-0.1.0.tgz` 后本地安装。
+
+### 方式二：作为本地插件注入（开发/试用）
 
 ```bash
 # 在 DSH 注入器环境内
@@ -31,7 +58,7 @@ dev_build_plugin {"dir": "D:/path/to/dsh-chat-tools"}
 dev_inject_plugin {"dir": "D:/path/to/dsh-chat-tools"}
 ```
 
-### 方式二：作为 npm/GitHub 包安装
+### 方式三：作为 npm/GitHub 包安装
 
 ```bash
 dsh plugin --profile <name> add @dsh-external/dsh-chat-tools
@@ -77,6 +104,11 @@ dsh-chat-tools/
 │       ├── store.ts          # 选择/折叠状态
 │       ├── export.ts         # Markdown/TXT 导出逻辑
 │       └── components.tsx    # 头部工具栏 + 每轮折叠/复选框
+├── demo/
+│   └── index.html            # 纯前端交互演示（折叠 + 多选 + 导出）
+├── docs/
+│   ├── screenshot-collapse.svg
+│   └── screenshot-export.svg
 ├── cordis.patch.yml          # bundle 挂载补丁
 ├── package.json
 └── README.md
